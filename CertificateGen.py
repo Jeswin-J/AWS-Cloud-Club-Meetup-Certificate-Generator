@@ -8,6 +8,20 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import os
 import pandas as pd
+import re
+
+def format_string(name):
+    name = ' '.join(name.replace('.', ' ').split())
+    formatted_words = []
+    
+    for word in name.split():
+        if len(word) == 2 and word.isupper():
+            formatted_words.append(word)
+        else:
+            formatted_words.append(word.capitalize())
+    
+    return ' '.join(formatted_words)
+
 
 def create_overlay(name, date):
     packet = BytesIO()
@@ -48,10 +62,12 @@ def add_text_to_pdf(template_path, output_path, name, date):
         writer.write(output_pdf)
 
 if __name__ == "__main__":
-    csv_file = "Input/attendees.csv" 
+    csv_file = "Input/meetup3.csv" 
     data = pd.read_csv(csv_file)
-    names = (data['First name'] + ' ' + data['Last name']).str.title()
-    date = str(datetime.now().day) + " / " + str(datetime.now().month) + " / " + str(datetime.now().year)
+    # names = ["Praneth Kumar"]
+    # names = (data['First name'] + ' ' + data['Last name']).str.title()
+    names = (data['Name']).apply(format_string)
+    date = "Aug 15, 2024"
     template_path = "Template/certificate.pdf"
     for name in names:
         print(name)
